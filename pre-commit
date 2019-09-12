@@ -1,0 +1,30 @@
+#!/usr/bin/sh
+
+files=$(git diff-index --name-only --cached HEAD)
+
+declare -a filesWithoutEmptyLine
+
+for f in ${files[@]}
+do
+	if [[ "$f" =~ [.](js|cs|config)$ ]];
+  	then
+  		ch=$(tail -c1 $f)
+  		num=$(printf '%d' "'$ch");
+  		if [ $num != 0 ] && [ $num != 10 ];
+  		then
+			filesWithoutEmptyLine+=($f)
+		fi  		
+   	fi
+done
+
+if [ $filesWithoutEmptyLine != "" ]
+then
+	printf '%s\n' "xD"
+	printf '%s\n\t' "You can't commit changes because there is no empty lines in the end of following files:"
+	
+	for file in ${filesWithoutEmptyLine[@]};
+	do
+		printf '%s\n\t' "- $file"
+	done
+	exit 1;
+fi
