@@ -1,30 +1,30 @@
 #!/usr/bin/sh
 
-files=$(git diff-index --name-only --cached HEAD)
+files=$(git diff-index --name-only --cached HEAD) 	#get all files inside commit
 
 declare -a filesWithoutEmptyLine
 
 for f in ${files[@]}
 do
-	if [[ "$f" =~ [.](js|cs|config)$ ]];
+	if [[ "$f" =~ [.](js|cs|config)$ ]]; 		#filter by expansion
   	then
-  		ch=$(tail -c1 $f)
-  		num=$(printf '%d' "'$ch");
-  		if [ $num != 0 ] && [ $num != 10 ];
+  		ch=$(tail -c1 $f) 			#get last bite of file
+  		num=$(printf '%d' "'$ch");		#get number of char (it's just duct tape, other don't work on the windows)
+  		if [ $num != 0 ] && [ $num != 10 ];	# 0 - \0, 10 - \n ASCII
   		then
-			filesWithoutEmptyLine+=($f)
+			filesWithoutEmptyLine+=($f)   	#add file without empty line to array
 		fi  		
    	fi
 done
 
-if [ $filesWithoutEmptyLine != "" ]
+if [ $filesWithoutEmptyLine != "" ]			#check for empty
 then
 	printf '%s\n' "xD"
 	printf '%s\n\t' "You can't commit changes because there is no empty lines in the end of following files:"
 	
 	for file in ${filesWithoutEmptyLine[@]};
 	do
-		printf '%s\n\t' "- $file"
+		printf '%s\n\t' "- $file"		#just print our files
 	done
-	exit 1;
+	exit 1;						#exit with error
 fi
